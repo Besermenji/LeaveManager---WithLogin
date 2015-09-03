@@ -15,6 +15,7 @@ namespace LeaveManager___WithLogin.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
         
         protected override void Seed(LeaveManager___WithLogin.Models.ApplicationDbContext context)
@@ -34,7 +35,6 @@ namespace LeaveManager___WithLogin.Migrations
 
 
             //create roles
-
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
             ////roleManager.Create(new IdentityRole("Administrator"));
             ////roleManager.Create(new IdentityRole("Employee"));
@@ -69,6 +69,8 @@ namespace LeaveManager___WithLogin.Migrations
             //    UserManager.AddToRole(user.Id, roleid);
             //}
 
+            //populateDatabase(context);
+
 
 
         }
@@ -77,30 +79,30 @@ namespace LeaveManager___WithLogin.Migrations
 
         private void populateDatabase(ApplicationDbContext db)
         {
-            Employee e1 = new Employee { employeeFirstName = "Pera", employeeLastName = "Peric", employeeEmail = "pera.peric@gmail.com" };
-            Employee e2 = new Employee { employeeFirstName = "Mitar", employeeLastName = "Mitric", employeeEmail = "mitar.mitric@gmail.com" };
-            Employee e3 = new Employee { employeeFirstName = "Zika", employeeLastName = "Zikic", employeeEmail = "zika.zikic@gmail.com" };
-            Employee e4 = new Employee { employeeFirstName = "Marina", employeeLastName = "Maric", employeeEmail = "marina.maric@gmail.com" };
-            Employee e5 = new Employee { employeeFirstName = "Maja", employeeLastName = "Majic", employeeEmail = "maja.majic@gmail.com" };
-            Employee e6 = new Employee { employeeFirstName = "Nikola", employeeLastName = "Nikolic", employeeEmail = "nikola.nikolic@gmail.com" };
+            //Employee e1 = new Employee { employeeFirstName = "Pera", employeeLastName = "Peric", employeeEmail = "pera.peric@gmail.com" };
+            //Employee e2 = new Employee { employeeFirstName = "Mitar", employeeLastName = "Mitric", employeeEmail = "mitar.mitric@gmail.com" };
+            //Employee e3 = new Employee { employeeFirstName = "Zika", employeeLastName = "Zikic", employeeEmail = "zika.zikic@gmail.com" };
+            //Employee e4 = new Employee { employeeFirstName = "Marina", employeeLastName = "Maric", employeeEmail = "marina.maric@gmail.com" };
+            //Employee e5 = new Employee { employeeFirstName = "Maja", employeeLastName = "Majic", employeeEmail = "maja.majic@gmail.com" };
+            //Employee e6 = new Employee { employeeFirstName = "Nikola", employeeLastName = "Nikolic", employeeEmail = "nikola.nikolic@gmail.com" };
 
-            db.Employees.AddOrUpdate(e1, e2, e3, e4, e5, e6);
+            //db.Employees.AddOrUpdate(e1, e2, e3, e4, e5, e6);
 
-            RolesForEmployee r1 = new RolesForEmployee { roleName = "Worker" };
-            RolesForEmployee r2 = new RolesForEmployee { roleName = "Delivery Manager" };
-            RolesForEmployee r3 = new RolesForEmployee { roleName = "Department Manager" };
+            //RolesForEmployee r1 = new RolesForEmployee { roleName = "Worker" };
+            //RolesForEmployee r2 = new RolesForEmployee { roleName = "Delivery Manager" };
+            //RolesForEmployee r3 = new RolesForEmployee { roleName = "Department Manager" };
 
-            db.RolesForEmployees.AddOrUpdate(r1, r2, r3);
+            //db.RolesForEmployees.AddOrUpdate(r1, r2, r3);
 
-            /*EmployeeRole er1 = new EmployeeRole { employee = e1, employeeID = e1.employeeID, role = r1, roleID = r1.roleID };
-            EmployeeRole er2 = new EmployeeRole { employee = e2, employeeID = e2.employeeID, role = r1, roleID = r1.roleID };
-            EmployeeRole er3 = new EmployeeRole { employee = e2, employeeID = e2.employeeID, role = r2, roleID = r2.roleID };
-            EmployeeRole er4 = new EmployeeRole { employee = e3, employeeID = e3.employeeID, role = r2, roleID = r2.roleID };
-            EmployeeRole er5 = new EmployeeRole { employee = e4, employeeID = e4.employeeID, role = r1, roleID = r1.roleID };
-            EmployeeRole er6 = new EmployeeRole { employee = e5, employeeID = e1.employeeID, role = r1, roleID = r1.roleID };
-            EmployeeRole er7 = new EmployeeRole { employee = e6, employeeID = e6.employeeID, role = r3, roleID = r3.roleID };*/
+            ///*EmployeeRole er1 = new EmployeeRole { employee = e1, employeeID = e1.employeeID, role = r1, roleID = r1.roleID };
+            //EmployeeRole er2 = new EmployeeRole { employee = e2, employeeID = e2.employeeID, role = r1, roleID = r1.roleID };
+            //EmployeeRole er3 = new EmployeeRole { employee = e2, employeeID = e2.employeeID, role = r2, roleID = r2.roleID };
+            //EmployeeRole er4 = new EmployeeRole { employee = e3, employeeID = e3.employeeID, role = r2, roleID = r2.roleID };
+            //EmployeeRole er5 = new EmployeeRole { employee = e4, employeeID = e4.employeeID, role = r1, roleID = r1.roleID };
+            //EmployeeRole er6 = new EmployeeRole { employee = e5, employeeID = e1.employeeID, role = r1, roleID = r1.roleID };
+            //EmployeeRole er7 = new EmployeeRole { employee = e6, employeeID = e6.employeeID, role = r3, roleID = r3.roleID };*/
 
-            //db.EmployeeRoles.AddOrUpdate(er1, er2, er3, er4, er5, er6, er7);
+            ////db.EmployeeRoles.AddOrUpdate(er1, er2, er3, er4, er5, er6, er7);
 
             LeaveReason lr1 = new LeaveReason() { leaveReasonName = "Holiday" };
             LeaveReason lr2 = new LeaveReason() { leaveReasonName = "Sickness" };
@@ -114,23 +116,23 @@ namespace LeaveManager___WithLogin.Migrations
 
             db.RequestStatus.AddOrUpdate(rs2, rs3, rs4);
 
-            LeaveRequest leaveRequest1 = new LeaveRequest
-            {
-                allDayEvent = true,
-                deliveryManager = e3,
-                deliveryManagerComment = "",
-                departmentManager = e6,
-                departmentManagerComment = "",
-                Description = "My wifes birthday",
-                employee = e1,
-                endTime = new DateTime(2012, 12, 12),
-                leaveReason = lr1,
-                deliveryManagerStatus = rs2,
-                startTime = new DateTime(2012, 12, 22),
-                departmentManagerStatus = rs2
+            //LeaveRequest leaveRequest1 = new LeaveRequest
+            //{
+            //    allDayEvent = true,
+            //    deliveryManager = e3,
+            //    deliveryManagerComment = "",
+            //    departmentManager = e6,
+            //    departmentManagerComment = "",
+            //    Description = "My wifes birthday",
+            //    employee = e1,
+            //    endTime = new DateTime(2012, 12, 12),
+            //    leaveReason = lr1,
+            //    deliveryManagerStatus = rs2,
+            //    startTime = new DateTime(2012, 12, 22),
+            //    departmentManagerStatus = rs2
 
-            };
-            db.LeaveRequests.AddOrUpdate(leaveRequest1);
+            //};
+            //db.LeaveRequests.AddOrUpdate(leaveRequest1);
             db.SaveChanges();
 
 

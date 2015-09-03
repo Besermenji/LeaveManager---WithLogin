@@ -86,7 +86,7 @@ namespace LeaveManager___WithLogin.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -145,9 +145,15 @@ namespace LeaveManager___WithLogin.Controllers
             }
         }
 
+        private string generateUseName(string firstName, string lastName) {
+            return firstName[0].ToString().ToLower() + "." + lastName.ToLower();
+
+        }
+        
         //
         // GET: /Account/Register
         [Authorize(Roles ="Administrator")]
+        //[AllowAnonymous]
         public ActionResult Register()
         {
             return View();
@@ -157,12 +163,17 @@ namespace LeaveManager___WithLogin.Controllers
         // POST: /Account/Register
         [HttpPost]
         [Authorize(Roles ="Administrator")]
+        //[AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = generateUseName(model.FirstName,model.LastName), Email = model.Email, FirstName=model.FirstName,LastName = model.LastName };
+                Employee employee = new Employee { employeeEmail = model.Email, employeeFirstName = model.FirstName, employeeLastName = model.LastName };
+                ApplicationDbContext db = new ApplicationDbContext();
+                db.Employees.Add(employee);
+                db.SaveChanges();
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -174,7 +185,7 @@ namespace LeaveManager___WithLogin.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Roles");
                 }
                 AddErrors(result);
             }

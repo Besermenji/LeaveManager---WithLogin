@@ -8,12 +8,25 @@ using System.Web;
 using System.Web.Mvc;
 using LeaveManager.Models;
 using LeaveManager___WithLogin.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace LeaveManager.Controllers
-{   [Authorize(Roles =("Employee"))]
+{
+    [Authorize(Roles = ("Employee"))]
     public class EmployeeLeaveRequestViewModelsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
+
+        private string getUserNameById(int id) {
+            var tmp = db.Employees.Find(id);
+            return tmp.employeeName;
+        }
+        private Employee getEemployeebyID(int id) {
+            return db.Employees.Find(id);
+        }
+
 
         // GET: EmployeeLeaveRequestViewModels
         public ActionResult Index()
@@ -21,36 +34,47 @@ namespace LeaveManager.Controllers
             //var employeeLeaveRequestViewModels = db.LeaveRequests.Include(e => e.leaveReason).Include(e => e.deliveryManagerStatus).Include(e => e.departmentManagerStatus);
 
             List<EmployeeLeaveRequestViewModel> requestViewModelList = new List<EmployeeLeaveRequestViewModel>();
-
-
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var currentUser = manager.FindById(User.Identity.GetUserId());
+            List<LeaveRequest> tmp = new List<LeaveRequest>();
             foreach (LeaveRequest req in db.LeaveRequests)
             {
 
-                EmployeeLeaveRequestViewModel viewModel = new EmployeeLeaveRequestViewModel()
+
+                tmp.Add(req);
+
+
+            }
+            foreach (LeaveRequest req in tmp) {
+               string name = getUserNameById(req.employeeID);
+               if (name.Equals(currentUser.Name)) { 
+                requestViewModelList.Add(new EmployeeLeaveRequestViewModel()
                 {
                     allDayEvent = req.allDayEvent,
-                    deliveryManager = req.deliveryManager,
+                    deliveryManager = getEemployeebyID(req.deliveryManagerID),
                     deliveryManagerStatus = req.deliveryManagerStatus,
-                    departmentManager = req.departmentManager,
+                    departmentManager = getEemployeebyID(req.departmentManagerID),
                     departmentManagerStatus = req.departmentManagerStatus,
                     Description = req.Description,
-                    employee = req.employee,
+                    employee = getEemployeebyID(req.employeeID),
                     endTime = req.endTime,
                     leaveReason = req.leaveReason,
                     leaveRequestID = req.leaveRequestID,
                     startTime = req.startTime,
-                    departmentManagerComment = req.departmentManagerComment,
-                    deliveryManagerComment = req.deliveryManagerComment
+                    employeeID = req.employeeID,
+                    deliveryManagerID = req.departmentManagerID,
+                    departmentManagerID = req.departmentManagerID,
+                    deliveryManagerComment = req.deliveryManagerComment,
+                    departmentManagerComment = req.departmentManagerComment
+                    
 
 
 
-                };
-
-                requestViewModelList.Add(viewModel);
-
-
+                });
+              }
             }
             return View(requestViewModelList.AsQueryable());
+            //return View();
         }
 
 
@@ -75,13 +99,17 @@ namespace LeaveManager.Controllers
         // GET: EmployeeLeaveRequestViewModels/Create
         public ActionResult Create()
         {
-            SelectList deliveryManagers = getEmployeeByRoleName("Delivery Manager");
-            SelectList departmentManagers = getEmployeeByRoleName("Department Manager");
+            SelectList deliveryManagers = getEmployeeByRoleName("DeliveryManager");
+            SelectList departmentManagers = getEmployeeByRoleName("DepartmentManager");
 
             ViewBag.departmentManagerID = departmentManagers;
             ViewBag.deliveryManagerID = deliveryManagers;
-
-            ViewBag.employeeID = new SelectList(db.Employees, "employeeID", "employeeName");
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var currentUser = manager.FindById(User.Identity.GetUserId());
+            ViewBag.employeeID = currentUser.Name;
+            ApplicationDbContext db = new ApplicationDbContext();
+            var userid = db.Employees.Single(x => x.employeeFirstName == currentUser.FirstName && x.employeeLastName == currentUser.LastName);
+            ViewBag.ID = userid.employeeID;
             ViewBag.leaveReasonID = new SelectList(db.LeaveReasons, "leaveReasonID", "leaveReasonName");
 
             return View();
@@ -90,7 +118,8 @@ namespace LeaveManager.Controllers
         private SelectList getEmployeeByRoleName(string roleName)
         {
 
-            var m = from e in db.EmployeeRoles
+            
+                    var m = from e in db.EmployeeRoles
                     where e.role.roleName == roleName
                     select e.employee;
             SelectList sl = new SelectList(m, "employeeID", "employeeName");
@@ -109,7 +138,26 @@ namespace LeaveManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "leaveRequestID,employeeID,allDayEvent,startTime,endTime,leaveReasonID,Description,deliveryManagerID,departmentManagerID")] EmployeeLeaveRequestViewModel employeeLeaveRequestViewModel)
         {
-            LeaveRequest newLeaveRequest = mapLeaveRequestViewModel(employeeLeaveRequestViewModel);
+            LeaveRequest newLeaveRequest = new LeaveRequest
+            {
+                allDayEvent = employeeLeaveRequestViewModel.allDayEvent,
+                deliveryManager = employeeLeaveRequestViewModel.deliveryManager,
+                deliveryManagerComment = employeeLeaveRequestViewModel.deliveryManagerComment,
+                deliveryManagerStatus = GetRequestStatusByName("Pending"),
+                departmentManager = employeeLeaveRequestViewModel.departmentManager,
+                departmentManagerComment = employeeLeaveRequestViewModel.departmentManagerComment,
+                departmentManagerStatus = GetRequestStatusByName("Pending"),
+                Description = employeeLeaveRequestViewModel.Description,
+                employee = employeeLeaveRequestViewModel.employee,
+                endTime = employeeLeaveRequestViewModel.endTime,
+                leaveReason = employeeLeaveRequestViewModel.leaveReason,
+                leaveReasonID = employeeLeaveRequestViewModel.leaveReasonID,
+                startTime = employeeLeaveRequestViewModel.startTime,
+                deliveryManagerID = employeeLeaveRequestViewModel.deliveryManagerID,
+                departmentManagerID = employeeLeaveRequestViewModel.departmentManagerID,
+                employeeID = employeeLeaveRequestViewModel.employeeID,
+                
+            };
 
             if (ModelState.IsValid)
             {

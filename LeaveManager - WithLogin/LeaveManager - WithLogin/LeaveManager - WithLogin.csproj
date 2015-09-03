@@ -258,15 +258,29 @@
     <Content Include="Views\Employees\Edit.cshtml" />
     <Content Include="Views\Employees\Index.cshtml" />
     <Content Include="Views\Account\AccesDenied.cshtml" />
+    <Content Include="Views\Roles\Create.cshtml" />
+    <Content Include="Views\Roles\Edit.cshtml" />
+    <Content Include="Views\Roles\Index.cshtml" />
+    <Content Include="Views\Roles\ManageUserRoles.cshtml" />
+    <Content Include="Views\DeliveryManagerViewModel\Index.cshtml" />
+    <Content Include="Views\DeliveryManagerViewModel\ProcessRequest.cshtml" />
+    <Content Include="Views\DepartmentManagerLeaveRequestViewModels\DepartmentManagerProcessRequest.cshtml" />
+    <Content Include="Views\DepartmentManagerLeaveRequestViewModels\Index.cshtml" />
+    <Content Include="Views\EmployeeLeaveRequestViewModels\Create.cshtml" />
+    <Content Include="Views\EmployeeLeaveRequestViewModels\Delete.cshtml" />
+    <Content Include="Views\EmployeeLeaveRequestViewModels\Details.cshtml" />
+    <Content Include="Views\EmployeeLeaveRequestViewModels\Edit.cshtml" />
+    <Content Include="Views\EmployeeLeaveRequestViewModels\Index.cshtml" />
+    <Content Include="Views\LeaveRequests\Create.cshtml" />
+    <Content Include="Views\LeaveRequests\Delete.cshtml" />
+    <Content Include="Views\LeaveRequests\Details.cshtml" />
+    <Content Include="Views\LeaveRequests\Edit.cshtml" />
+    <Content Include="Views\LeaveRequests\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Resources\" />
     <Folder Include="Views\Ajax\" />
-    <Folder Include="Views\DeliveryManagerViewModel\" />
-    <Folder Include="Views\DepartmentManagerLeaveRequestViewModels\" />
-    <Folder Include="Views\EmployeeLeaveRequestViewModels\" />
-    <Folder Include="Views\LeaveRequests\" />
-    <Folder Include="Views\Roles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

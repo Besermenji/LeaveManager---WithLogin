@@ -66,3 +66,4 @@ C:\Users\v.besermenji\Desktop\leave Manager with login\LeaveManager - WithLogin\
 C:\Users\v.besermenji\Desktop\leave Manager with login\LeaveManager - WithLogin\LeaveManager - WithLogin\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\v.besermenji\Desktop\leave Manager with login\LeaveManager - WithLogin\LeaveManager - WithLogin\obj\Debug\LeaveManager - WithLogin.dll
 C:\Users\v.besermenji\Desktop\leave Manager with login\LeaveManager - WithLogin\LeaveManager - WithLogin\obj\Debug\LeaveManager - WithLogin.pdb
+C:\Users\v.besermenji\Desktop\leave Manager with login\LeaveManager - WithLogin\LeaveManager - WithLogin\obj\Debug\LeaveManager - WithLogin.csprojResolveAssemblyReference.cache

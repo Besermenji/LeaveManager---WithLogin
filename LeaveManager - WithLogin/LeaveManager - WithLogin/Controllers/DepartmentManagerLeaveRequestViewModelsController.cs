@@ -1,5 +1,7 @@
 ﻿using LeaveManager.Models;
 using LeaveManager___WithLogin.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,38 +11,57 @@ using System.Web.Mvc;
 
 namespace LeaveManager.Controllers
 {
-    [Authorize(Roles = "Department Manager")]
+    [Authorize(Roles = "DepartmentManager")]
     public class DepartmentManagerLeaveRequestViewModelsController : Controller
     {
 
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: DepartmentManagerLeaveRequestViewModels
+        private string getUserById(int id)
+        {
+            var tmp = db.Employees.Find(id);
+            return tmp.employeeName;
+        }
+        private Employee getEemployeebyID(int id)
+        {
+            return db.Employees.Find(id);
+        }
+
         public ActionResult Index()
         {
             List<DepartmentManagerLeaveRequestViewModel> requstsList = new List<DepartmentManagerLeaveRequestViewModel>();
+            List<LeaveRequest> tmp = new List<LeaveRequest>();
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var currentUser = manager.FindById(User.Identity.GetUserId());
+            foreach (LeaveRequest req in db.LeaveRequests) {
+                tmp.Add(req);
+            }
 
-            var m = from e in db.LeaveRequests
-                    where (e.deliveryManagerStatus.requestStatusName.Equals("Approved")) && e.departmentManagerStatus.requestStatusName.Equals("Pending")
-                    select e;
-
-            foreach (LeaveRequest req in m)
+            foreach (LeaveRequest req in tmp)
             {
-                DepartmentManagerLeaveRequestViewModel viewModel = new DepartmentManagerLeaveRequestViewModel()
+                string name = getUserById(req.employeeID);
+                if (req.deliveryManagerStatus.requestStatusName.Equals("Approved") && (req.departmentManagerStatus.requestStatusName.Equals("Pending")) && name.Equals(currentUser.Name))
                 {
-                    allDayEvent = req.allDayEvent,
-                    departmentManager = req.departmentManager,
-                    departmentManagerStatus = req.departmentManagerStatus,
-                    employee = req.employee,
-                    endTime = req.endTime,
-                    description = req.Description,
-                    leaveReason = req.leaveReason,
-                    startTime = req.startTime,
-                    departmentManagerComment = req.departmentManagerComment,
-                    leaveRequestID = req.leaveRequestID
 
-                };
+                    requstsList.Add( new DepartmentManagerLeaveRequestViewModel
+                    {
+                        allDayEvent = req.allDayEvent,
+                        departmentManager = getEemployeebyID(req.departmentManagerID),
+                        departmentManagerStatus = req.departmentManagerStatus,
+                        employee = getEemployeebyID(req.employeeID),
+                        endTime = req.endTime,
+                        description = req.Description,
+                        leaveReason = req.leaveReason,
+                        startTime = req.startTime,
+                        departmentManagerComment = req.departmentManagerComment,
+                        leaveRequestID = req.leaveRequestID,
+                        employeeID = req.employeeID,
+                        departmentManagerID = req.departmentManagerID,
+                        departmentManagerStatusID = req.departmentManagerID
 
-                requstsList.Add(viewModel);
+                    });
+                }
+
 
 
             }

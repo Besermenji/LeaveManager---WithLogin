@@ -24,16 +24,7 @@ namespace LeaveManager___WithLogin.Models
             }
         }
 
-        public string Username
-        {
-            get
-            {
-
-                string fName = FirstName.ToLower()[0].ToString();
-                string lName = LastName.ToLower();
-                return string.Format("{0}.{1}", fName, lName);
-            }
-        }
+        
         //public int employeeID { get; set; }
         //public virtual Employee employee { get; set; }
 

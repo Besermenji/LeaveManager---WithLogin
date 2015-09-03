@@ -10,7 +10,7 @@ using LeaveManager___WithLogin.Controllers;
 
 namespace MVCInBuiltFeatures.Controllers
 {
-    [Authorize(Roles ="Administrator")]
+   [Authorize(Roles ="Administrator")]
     public class RolesController : Controller
     {
         ApplicationDbContext context = new ApplicationDbContext();
@@ -41,6 +41,7 @@ namespace MVCInBuiltFeatures.Controllers
                 {
                     Name = collection["RoleName"]
                 });
+                context.RolesForEmployees.Add(new LeaveManager.Models.RolesForEmployee{roleName = collection["RoleName"] });
                 context.SaveChanges();
                 ViewBag.ResultMessage = "Role created successfully !";
                 return RedirectToAction("Index");
@@ -84,6 +85,8 @@ namespace MVCInBuiltFeatures.Controllers
         public ActionResult Delete(string RoleName)
         {
             var thisRole = context.Roles.Where(r => r.Name.Equals(RoleName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            var tmp = context.RolesForEmployees.Where(r => r.roleName.Equals(RoleName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            context.RolesForEmployees.Remove(tmp);
             context.Roles.Remove(thisRole);
             context.SaveChanges();
             return RedirectToAction("Index");
@@ -104,7 +107,10 @@ namespace MVCInBuiltFeatures.Controllers
             var account = new AccountController();
             var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
             UserManager.AddToRole(user.Id, RoleName);
-            
+            var employee = context.Employees.Single(x => x.employeeFirstName == user.FirstName && x.employeeLastName==user.LastName);
+            var role = context.RolesForEmployees.Single(x => x.roleName == RoleName);
+            context.EmployeeRoles.Add(new LeaveManager.Models.EmployeeRole { employee = employee, employeeID=employee.employeeID,role = role, roleID = role.rolesForEmployeeID});
+            context.SaveChanges();
             ViewBag.ResultMessage = "Role created successfully !";
             
             // prepopulat roles for the view dropdown
@@ -139,11 +145,18 @@ namespace MVCInBuiltFeatures.Controllers
         {
             var account = new AccountController();
             ApplicationUser user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
 
-            if (account.UserManager.IsInRole(user.Id, RoleName))  
+
+            if (UserManager.IsInRole(user.Id, RoleName))  
             {
-                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
                 UserManager.RemoveFromRole(user.Id, RoleName);
+                var employee = context.Employees.Single(x => x.employeeFirstName == user.FirstName && x.employeeLastName ==user.LastName);
+                var role = context.RolesForEmployees.Single(x => x.roleName == RoleName);
+                var tmp = context.EmployeeRoles.Single(x => x.role == role && x.employee == employee);
+                context.EmployeeRoles.Remove(tmp);
+                context.SaveChanges();
+
                 ViewBag.ResultMessage = "Role removed from this user successfully !";
             }
             else

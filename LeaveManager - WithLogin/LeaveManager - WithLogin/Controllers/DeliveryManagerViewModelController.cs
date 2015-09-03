@@ -1,5 +1,7 @@
 ﻿using LeaveManager.Models;
 using LeaveManager___WithLogin.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,35 +10,57 @@ using System.Web.Mvc;
 
 namespace LeaveManager.Controllers
 {
-    [Authorize(Roles = "Delivery Manager")]
+    [Authorize(Roles = "DeliveryManager")]
     public class DeliveryManagerViewModelController : Controller
     {
         ApplicationDbContext db = new ApplicationDbContext();
+
+        private Employee getEemployeebyID(int id)
+        {
+            return db.Employees.Find(id);
+        }
+        private string getUserNameById(int id)
+        {
+            var tmp = db.Employees.Find(id);
+            return tmp.employeeName;
+        }
+
         // GET: DeliveryManagerViewModel
         public ActionResult Index()
         {
             List<DeliveryManagerLeaveRequestViewModel> deliveryManagerViewModels = new List<DeliveryManagerLeaveRequestViewModel>();
+            List<LeaveRequest> tmp = new List<LeaveRequest>();
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var currentUser = manager.FindById(User.Identity.GetUserId());
 
-            foreach (LeaveRequest request in db.LeaveRequests) {
-                if (request.deliveryManagerStatus.requestStatusName.Equals("Pending"))
+            foreach (LeaveRequest req in db.LeaveRequests) {
+                tmp.Add(req);
+            }
+
+
+            
+            foreach (LeaveRequest request in tmp) {
+                string name = getUserNameById(request.employeeID);
+                if (request.deliveryManagerStatus.requestStatusName.Equals("Pending") && name.Equals(currentUser.Name)) 
                 {
                     deliveryManagerViewModels.Add(new DeliveryManagerLeaveRequestViewModel
                     {
 
                         allDayEvent = request.allDayEvent,
-                        deliveryManager = request.deliveryManager,
+                        deliveryManager = getEemployeebyID(request.deliveryManagerID),
                         deliveryManagerComment = request.deliveryManagerComment,
                         deliveryManagerStatus = request.deliveryManagerStatus,
                         Description = request.Description,
-                        employee = request.employee,
+                        employee = getEemployeebyID(request.employeeID),
                         endTime = request.endTime,
                         leaveReason = request.leaveReason,
                         startTime = request.startTime,
                         LeaveRequestId = request.leaveRequestID,
-                        DeliveryManagerID = request.deliveryManager.employeeID,
-                        EmployeeID = request.employee.employeeID,
-                        LeaveReasonID = request.leaveReason.leaveReasonID,
+                        DeliveryManagerID = request.deliveryManagerID,
+                        EmployeeID = request.employeeID,
+                        LeaveReasonID = request.leaveReasonID,
                         deliveryManagerStatusID = request.deliveryManagerStatus.requestStatusID
+                        
 
                     });
                 }
@@ -100,7 +124,7 @@ namespace LeaveManager.Controllers
 
 
             var request = db.LeaveRequests.Find(id);
-            ViewData["EmployeeName"] = request.employee.employeeName;
+            ViewData["EmployeeName"] = getUserNameById(request.employeeID);
             ViewData["allDay"] = request.allDayEvent ? "YES" : "NO";
             ViewData["startDate"] = request.startTime;
             ViewData["endDate"] = request.endTime;

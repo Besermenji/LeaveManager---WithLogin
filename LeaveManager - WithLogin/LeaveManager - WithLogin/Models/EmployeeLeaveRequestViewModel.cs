@@ -43,6 +43,7 @@ namespace LeaveManager.Models
         public string departmentManagerComment { get; set; }
 
         [Display(Name = "Delivery Manager Status")]
+
         public virtual RequestStatus deliveryManagerStatus { get; set; }
         public virtual RequestStatus departmentManagerStatus { get; set; }
 

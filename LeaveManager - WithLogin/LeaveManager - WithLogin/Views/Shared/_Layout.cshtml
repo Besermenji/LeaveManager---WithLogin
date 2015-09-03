@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div style="margin-top:-50px" class="navbar navbar-default navbar-static-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -18,13 +18,17 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                <a href="http://levi9.com">
+                    <img style="background-color:transparent,ActiveBorder:none" src=' ~/Resources/Levi9.png' />
+                </a>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>@Html.ActionLink("List Of All Requests", "Index", "EmployeeLeaveRequestViewModels")</li>
+                    <li>@Html.ActionLink("Review by Delivery Manager", "Index", "DeliveryManagerViewModel")</li>
+                    <li>@Html.ActionLink("Review by Department Manager", "Index", "DepartmentManagerLeaveRequestViewModels")</li>
+                    <li>@Html.ActionLink("Admin panel","Index","Roles")</li>
+
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
